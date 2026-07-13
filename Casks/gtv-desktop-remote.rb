@@ -1,8 +1,8 @@
 cask "gtv-desktop-remote" do
-  version "1.6.3"
-  sha256 "ca6d56e44f85d4126d31a5f0644f62917009fbb705fb91ee952944ac09467154"
+  version "1.6.4"
+  sha256 "73c99328bd58b55a0c0ea37e0234d9dae698b6d404725328bf401ef36e42d67d"
 
-  url "https://github.com/usrivastava92/gtv-desktop-remote/releases/download/v1.6.3/GTV.Remote-1.6.3-mac-arm64.dmg"
+  url "https://github.com/usrivastava92/gtv-desktop-remote/releases/download/v1.6.4/GTV.Remote-1.6.4-mac-arm64.dmg"
   name "GTV Remote"
   desc "Desktop remote for Google TV and Android TV"
   homepage "https://github.com/usrivastava92/gtv-desktop-remote"

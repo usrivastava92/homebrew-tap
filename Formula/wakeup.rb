@@ -2,22 +2,27 @@ class Wakeup < Formula
   desc "A tiny, auditable caffeinate-compatible keep-awake CLI"
   homepage "https://github.com/usrivastava92/wakeup"
   license "MIT"
-  version "0.1.0"
+  version "0.1.1"
 
   on_macos do
     if Hardware::CPU.arm?
-      url "https://github.com/usrivastava92/wakeup/releases/download/v0.1.0/wakeup-macos-arm64"
-      sha256 "0eebca531f761d64b193d679ad3ece38000d0db50b2f34162bf4b9b73e0c9f44"
-    else
-      url "https://github.com/usrivastava92/wakeup/releases/download/v0.1.0/wakeup-macos-x86_64"
-      sha256 "a75616621cc7414cf60590cac088f57ad40a529c174dc000aaf3f376b9b5c098"
+      url "https://github.com/usrivastava92/wakeup/releases/download/v0.1.1/wakeup-macos-arm64"
+      sha256 "88d6ffbb16423ea2ba93b2919c1debf368ff2a45c67042e6f7edd5f5c32f1fed"
+    end
+    if Hardware::CPU.intel?
+      url "https://github.com/usrivastava92/wakeup/releases/download/v0.1.1/wakeup-macos-x86_64"
+      sha256 "bebf043f1a34add645bfb4adc2a203bff9b5c8a9a9ead89e6756ffd0d6b08406"
     end
   end
 
   on_linux do
     if Hardware::CPU.intel?
-      url "https://github.com/usrivastava92/wakeup/releases/download/v0.1.0/wakeup-linux-x86_64"
-      sha256 "939f7c5a137e9d6709de6c865335cc36f34ee36bf2993d04736f094588f7d4cf"
+      url "https://github.com/usrivastava92/wakeup/releases/download/v0.1.1/wakeup-linux-x86_64"
+      sha256 "70290e7384cb3182fbd1479c8dc9df1ce4f7ce431ab82289b73423e51795e897"
+    end
+    if Hardware::CPU.arm?
+      url "https://github.com/usrivastava92/wakeup/releases/download/v0.1.1/wakeup-linux-arm64"
+      sha256 "f27d78cc7c5a058f2354b05f5336fd1a15dfb84d292b65adea2488bfb3c65a8d"
     end
   end
 

@@ -1,0 +1,35 @@
+name: Homebrew postflight smoke
+
+on:
+  pull_request:
+    paths:
+      - Casks/gtv-desktop-remote.rb
+      - test/postflight_smoke.rb
+      - .github/workflows/postflight-smoke.yml
+  push:
+    branches: [main]
+    paths:
+      - Casks/gtv-desktop-remote.rb
+      - test/postflight_smoke.rb
+      - .github/workflows/postflight-smoke.yml
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  postflight:
+    runs-on: macos-15 # Official standard Apple Silicon label; not macos-15-arm64.
+    timeout-minutes: 15
+    env:
+      HOMEBREW_NO_ANALYTICS: "1"
+      HOMEBREW_NO_AUTO_UPDATE: "1"
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7
+      - name: Update official stable Homebrew and record runtime
+        run: |
+          brew update
+          brew --version
+          brew config
+      - name: Exercise actual cask with an isolated fixture app
+        run: brew ruby test/postflight_smoke.rb

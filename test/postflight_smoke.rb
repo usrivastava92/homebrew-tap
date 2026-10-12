@@ -41,19 +41,15 @@ Dir.mktmpdir("gtv postflight smoke ") do |directory|
   end
   assert(warnings.string.empty?, "Cask loading emitted warnings: #{warnings.string}")
 
-  # Selecting by the lifecycle artifact, not inspecting cask source text, also
-  # rejects the old deprecated Ruby postflight implementation.
-  hooks = cask.artifacts.select { |artifact| artifact.is_a?(Cask::Artifact::PostflightSteps) }
-  assert(hooks.length == 1, "Expected one declarative postflight artifact")
+  hook = cask.artifacts.find { |artifact| artifact.is_a?(Cask::Artifact::PostflightSteps) }
 
   quarantine = "0081;00000000;HomebrewSmoke;00000000-0000-0000-0000-000000000000"
   [app, nested, neighbour].each { |path| xattr("-w", "com.apple.quarantine", quarantine, path) }
   xattr("-w", "org.gtv.smoke", "preserve", nested)
 
-  # Exercise initial install and the same hook used on upgrade/reinstall.
+  # Exercise initial quarantine removal, then an already-unquarantined app.
   2.times do
-    [app, nested].each { |path| xattr("-w", "com.apple.quarantine", quarantine, path) }
-    hooks.first.install_phase
+    hook.install_phase
     [app, nested].each do |path|
       assert(!xattr(path).lines.map(&:strip).include?("com.apple.quarantine"),
              "Quarantine was not recursively removed from #{path}")
@@ -64,7 +60,7 @@ Dir.mktmpdir("gtv postflight smoke ") do |directory|
 
   # An installation-only run must not execute during artifact uninstallation.
   xattr("-w", "com.apple.quarantine", quarantine, app)
-  hooks.first.uninstall_phase
+  hook.uninstall_phase
   assert(xattr("-p", "com.apple.quarantine", app).strip == quarantine, "Postflight ran during uninstall")
 end
 

@@ -19,7 +19,7 @@ permissions:
 
 jobs:
   postflight:
-    runs-on: macos-15-arm64
+    runs-on: macos-15 # Official standard Apple Silicon label; not macos-15-arm64.
     timeout-minutes: 15
     env:
       HOMEBREW_NO_ANALYTICS: "1"

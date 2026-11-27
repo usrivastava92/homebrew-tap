@@ -16,9 +16,17 @@ cask "gtv-desktop-remote" do
 
   app "GTV Remote.app"
 
-  postflight do
-    system_command "/usr/bin/xattr",
-                   args: ["-dr", "com.apple.quarantine", "#{appdir}/GTV Remote.app"]
+  # Homebrew 6.0.1 has postflight_steps, but its step DSL cannot run commands.
+  if defined?(Homebrew::InstallSteps::DSL) && Homebrew::InstallSteps::DSL.method_defined?(:run)
+    postflight_steps do
+      run "/usr/bin/xattr",
+          args: ["-dr", "com.apple.quarantine", "{{appdir}}/GTV Remote.app"]
+    end
+  else
+    postflight do
+      system_command "/usr/bin/xattr",
+                     args: ["-dr", "com.apple.quarantine", "#{appdir}/GTV Remote.app"]
+    end
   end
 
   caveats do

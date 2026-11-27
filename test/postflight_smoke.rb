@@ -36,12 +36,22 @@ Dir.mktmpdir("gtv postflight smoke ") do |directory|
     cask = Cask::CaskLoader::FromPathLoader.new(
       Pathname(__dir__).parent/"Casks/gtv-desktop-remote.rb",
     ).load(config: config)
+    # Ignore any locally installed cask's saved configuration.
+    cask.config = config
   ensure
     $stderr = previous_stderr
   end
   assert(warnings.string.empty?, "Cask loading emitted warnings: #{warnings.string}")
 
-  hook = cask.artifacts.find { |artifact| artifact.is_a?(Cask::Artifact::PostflightSteps) }
+  modern = Homebrew::InstallSteps::DSL.method_defined?(:run)
+  expected_modern = ENV["HOMEBREW_GTV_EXPECT_LEGACY_POSTFLIGHT"] != "1"
+  assert(modern == expected_modern, "Unexpected Homebrew install-step API for this smoke run")
+  hook_class = modern ? Cask::Artifact::PostflightSteps : Cask::Artifact::PostflightBlock
+  hooks = cask.artifacts.select do |artifact|
+    artifact.is_a?(Cask::Artifact::PostflightSteps) || artifact.is_a?(Cask::Artifact::PostflightBlock)
+  end
+  assert(hooks.length == 1 && hooks.first.is_a?(hook_class), "Expected exactly one #{hook_class} artifact")
+  hook = hooks.first
 
   quarantine = "0081;00000000;HomebrewSmoke;00000000-0000-0000-0000-000000000000"
   [app, nested, neighbour].each { |path| xattr("-w", "com.apple.quarantine", quarantine, path) }
@@ -64,4 +74,4 @@ Dir.mktmpdir("gtv postflight smoke ") do |directory|
   assert(xattr("-p", "com.apple.quarantine", app).strip == quarantine, "Postflight ran during uninstall")
 end
 
-puts "PASS: warning-free Homebrew loading; real sandboxed postflight removes only fixture quarantine; custom appdir spaces and lifecycle isolation preserved"
+puts "PASS: warning-free Homebrew loading; real postflight removes only fixture quarantine; custom appdir spaces and lifecycle isolation preserved"
